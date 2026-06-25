@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import {
   CRMData, Lead, Account, Contact, Project,
   Material, PaymentDelivered, OneTimePayment, PaymentReceived, ProjectDocument, OtherMaterial,
-  InteriorMaterial, FinancialSummary, MaterialCategory,
+  InteriorMaterial, FinancialSummary, MaterialCategory, Quotation,
 } from '@/lib/types';
 import { generateId, generateProjectId, nowISO } from '@/lib/utils';
 
