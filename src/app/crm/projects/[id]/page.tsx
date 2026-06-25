@@ -99,9 +99,13 @@ export default function ProjectDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b mb-6 overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 scrollbar-hide" style={{ borderColor: '#E2E8F0', WebkitOverflowScrolling: 'touch' }}>
+      <div className="grid grid-cols-3 sm:flex sm:gap-0 border-b-0 sm:border-b mb-6 gap-2 sm:-mx-0 sm:px-0" style={{ borderColor: '#E2E8F0' }}>
         {TABS.map((tab, i) => (
-          <button key={tab} className={`tab-btn ${activeTab === i ? 'active' : ''}`} onClick={() => setActiveTab(i)}>
+          <button 
+            key={tab} 
+            className={`tab-btn flex items-center justify-center text-center ${activeTab === i ? 'active' : ''}`} 
+            onClick={() => setActiveTab(i)}
+          >
             {tab}
           </button>
         ))}
