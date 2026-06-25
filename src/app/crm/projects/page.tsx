@@ -187,6 +187,7 @@ function CreateProjectModal({
               e.preventDefault();
               onCreate({
                 ...form,
+                isActive: true,
                 totalSiteArea: form.totalSiteArea ? Number(form.totalSiteArea) : null,
                 builtUpArea: form.builtUpArea ? Number(form.builtUpArea) : null,
                 numberOfFloors: form.numberOfFloors ? Number(form.numberOfFloors) : null,
