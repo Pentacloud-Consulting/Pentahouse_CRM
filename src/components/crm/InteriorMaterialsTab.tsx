@@ -9,12 +9,11 @@ import { QuotationLineItem } from '@/lib/types';
 import { useReactToPrint } from 'react-to-print';
 import QuotationPrintLayout, { DEFAULT_DESCRIPTIONS } from './QuotationPrintLayout';
 
-const CATEGORIES = ['Kitchen', 'Wardrobes', 'Bed Room 1', 'Bed Room 2', 'Bed Room 3', 'Dressing Table', 'Dining Cabinet', 'TV Unit', 'Wood Paneling', 'Shoe Rack', 'POP', 'Storage', 'Wash Basin', 'Bathroom Vanity', 'Foyer'];
+const CATEGORIES = ['Kitchen', 'Bed Room 1', 'Bed Room 2', 'Bed Room 3', 'Dining Cabinet', 'TV Unit', 'Wood Paneling', 'Shoe Rack', 'POP', 'Storage', 'Wash Basin', 'Bathroom Vanity', 'Foyer'];
 const FLOORS = ['Ground Floor', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor', '5th Floor'];
 
 const PREDEFINED_SUB_CATEGORIES: Record<string, string[]> = {
   'Kitchen': ['Below Counter', 'Over Head', 'Kitchen Loft', 'Tandem Box'],
-  'Wardrobes': ['Wardrobe', 'Wardrobe Loft'],
   'Bed Room 1': ['Wardrobe', 'Wardrobe Loft', 'Dressing Table', 'Bed - With Storage', 'Bed - Without Storage', 'Bed - Side Drawer 1', 'Bed - Side Drawer 2', 'Study', 'Sitting'],
   'Bed Room 2': ['Wardrobe', 'Wardrobe Loft', 'Dressing Table', 'Bed - With Storage', 'Bed - Without Storage', 'Bed - Side Drawer 1', 'Bed - Side Drawer 2', 'Study', 'Sitting'],
   'Bed Room 3': ['Wardrobe', 'Wardrobe Loft', 'Dressing Table', 'Bed - With Storage', 'Bed - Without Storage', 'Bed - Side Drawer 1', 'Bed - Side Drawer 2', 'Study', 'Sitting'],
