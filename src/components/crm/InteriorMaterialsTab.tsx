@@ -3,9 +3,9 @@
 import { useState, useMemo, useRef } from 'react';
 import { useData } from '@/contexts/DataContext';
 import { formatDate, formatCurrency } from '@/lib/utils';
-import { Plus, Trash2, X, FileText, Check, Pencil, Eye, Download } from 'lucide-react';
+import { Plus, Trash2, X, Check, Pencil, Eye, Download } from 'lucide-react';
 import ModalPortal from '@/components/ui/ModalPortal';
-import { QuotationLineItem } from '@/lib/types';
+import { QuotationLineItem, Quotation, Project, Account } from '@/lib/types';
 import QuotationPrintLayout, { DEFAULT_DESCRIPTIONS } from './QuotationPrintLayout';
 
 const CATEGORIES = ['Kitchen', 'Bed Room 1', 'Bed Room 2', 'Bed Room 3', 'Dining Cabinet', 'TV Unit', 'Wood Paneling', 'Shoe Rack', 'POP', 'Storage', 'Wash Basin', 'Bathroom Vanity', 'Foyer', 'Dressing'];
@@ -26,9 +26,9 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
   const account = project?.accountId ? getAccount(project.accountId) : null;
 
   const [showBuilder, setShowBuilder] = useState(false);
-  const [editingQuotation, setEditingQuotation] = useState<any>(null);
-  const [selectedQuoteForPrint, setSelectedQuoteForPrint] = useState<any>(null);
-  const [viewingQuotation, setViewingQuotation] = useState<any>(null);
+  const [editingQuotation, setEditingQuotation] = useState<Quotation | null>(null);
+  const [selectedQuoteForPrint, setSelectedQuoteForPrint] = useState<Quotation | null>(null);
+  const [viewingQuotation, setViewingQuotation] = useState<Quotation | null>(null);
 
   const printRef = useRef<HTMLDivElement>(null);
   const handleDownload = async (qNumber: string) => {
@@ -42,6 +42,7 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await html2pdf().set(opt as any).from(printRef.current).save();
     } catch (error) {
       console.error('PDF generation error:', error);
@@ -74,7 +75,7 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
             </thead>
             <tbody>
               {quotations.length === 0 ? (
-                <tr><td colSpan={6} className="text-center py-8 text-gray-400">No saved quotations found. Click "Create New Quotation" to build one.</td></tr>
+                <tr><td colSpan={6} className="text-center py-8 text-gray-400">No saved quotations found. Click &quot;Create New Quotation&quot; to build one.</td></tr>
               ) : (
                 quotations.map(q => (
                   <tr key={q.id} className="group">
@@ -248,7 +249,7 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
   );
 }
 
-function QuotationBuilder({ projectId, project, account, initialQuotation, onClose }: { projectId: string, project: any, account: any, initialQuotation?: any, onClose: () => void }) {
+function QuotationBuilder({ projectId, project, account, initialQuotation, onClose }: { projectId: string, project: Project | undefined, account: Account | null | undefined, initialQuotation?: Quotation | null, onClose: () => void }) {
   const { addQuotation, updateQuotation, data } = useData();
   const [items, setItems] = useState<QuotationLineItem[]>(initialQuotation?.items || []);
   const [showItemForm, setShowItemForm] = useState(false);
@@ -267,6 +268,7 @@ function QuotationBuilder({ projectId, project, account, initialQuotation, onClo
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await html2pdf().set(opt as any).from(printRef.current).save();
     } catch (error) {
       console.error('PDF generation error:', error);
@@ -536,7 +538,7 @@ function ItemForm({ initialItem, onSave, onCancel }: { initialItem?: QuotationLi
     notes: initialItem?.notes || '',
   });
 
-  const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubCategoryChange = (subCat: string) => {
     set('subCategory', subCat);
