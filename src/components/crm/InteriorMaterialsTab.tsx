@@ -42,7 +42,7 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
-      await html2pdf().set(opt).from(printRef.current).save();
+      await html2pdf().set(opt as any).from(printRef.current).save();
     } catch (error) {
       console.error('PDF generation error:', error);
     }
@@ -267,7 +267,7 @@ function QuotationBuilder({ projectId, project, account, initialQuotation, onClo
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
-      await html2pdf().set(opt).from(printRef.current).save();
+      await html2pdf().set(opt as any).from(printRef.current).save();
     } catch (error) {
       console.error('PDF generation error:', error);
     }
