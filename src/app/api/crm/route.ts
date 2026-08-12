@@ -5,6 +5,8 @@ import {
   OneTimePayment, PaymentReceived, ProjectDocument, OtherMaterial, InteriorMaterial, QuotationModel, Settings 
 } from '@/lib/models';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectDB();

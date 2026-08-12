@@ -43,8 +43,9 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
       </div>
 
       {/* Quotations List */}
-      <div className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
-        <div className="overflow-x-auto">
+      <div className="bg-white rounded-xl shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="crm-table">
             <thead>
               <tr>
@@ -98,6 +99,63 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden divide-y" style={{ borderColor: '#E2E8F0' }}>
+          {quotations.length === 0 ? (
+            <div className="text-center py-8 text-gray-400 text-sm">No saved quotations found.</div>
+          ) : (
+            quotations.map(q => (
+              <div key={q.id} className="p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-semibold text-blue-600">{q.quotationNumber}</h4>
+                    <span className="text-[12px] font-medium text-gray-500">{formatDate(q.quotationDate)}</span>
+                  </div>
+                  <button onClick={() => { if (confirm('Delete this quotation?')) deleteQuotation(q.id); }} className="p-1.5 rounded bg-red-50 text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                  <div>
+                    <span className="text-xs text-gray-400 block mb-0.5">Client</span>
+                    <span className="font-medium text-gray-900">{q.clientName || '—'}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-400 block mb-0.5">Grand Total</span>
+                    <span className="font-bold" style={{ color: '#C9A84C' }}>{formatCurrency(q.grandTotal)}</span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-xs text-gray-400 block mb-0.5">Items</span>
+                    <span className="font-medium text-gray-700">{q.items.length} items included</span>
+                  </div>
+                </div>
+                
+                <div className="flex gap-2 pt-2 border-t border-dashed border-gray-200">
+                  <button
+                    onClick={() => {
+                      setEditingQuotation(q);
+                      setShowBuilder(true);
+                    }}
+                    className="flex-1 py-2 rounded bg-gray-50 text-gray-700 border border-gray-200 text-xs font-semibold flex items-center justify-center gap-1.5"
+                  >
+                    <Pencil className="w-3.5 h-3.5" /> Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedQuoteForPrint(q);
+                      setTimeout(() => handlePrint(), 100);
+                    }}
+                    className="flex-1 py-2 rounded bg-gray-50 text-gray-700 border border-gray-200 text-xs font-semibold flex items-center justify-center gap-1.5"
+                  >
+                    <Printer className="w-3.5 h-3.5" /> Print PDF
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -212,59 +270,112 @@ function QuotationBuilder({ projectId, project, account, initialQuotation, onClo
             </div>
 
             {/* Items List */}
-            <div className="border rounded-xl overflow-hidden">
-              <table className="crm-table">
-                <thead>
-                  <tr>
-                    <th>Category</th>
-                    <th>Sub-category / Description</th>
-                    <th>Measurement</th>
-                    <th>Area</th>
-                    <th>Cost/Sq.ft</th>
-                    <th>Total</th>
-                    <th className="w-10"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.length === 0 ? (
-                    <tr><td colSpan={7} className="text-center py-6 text-gray-400">No items added to this quotation yet.</td></tr>
-                  ) : (
-                    items.map((it, idx) => (
-                      <tr key={idx}>
-                        <td className="font-semibold">
-                          <div>{it.category}</div>
-                          <div className="text-xs text-gray-500 font-normal">{it.floor}</div>
-                        </td>
-                        <td>
-                          <div className="font-medium text-gray-900">{it.subCategory || '—'}</div>
-                          <div className="text-xs text-gray-500 mt-1 line-clamp-2" title={it.notes}>{it.notes}</div>
-                        </td>
-                        <td>{it.measurement}</td>
-                        <td>{it.area.toFixed(2)}</td>
-                        <td>{formatCurrency(it.costPerSqft)}</td>
-                        <td className="font-bold text-gray-900">{formatCurrency(it.totalAmount)}</td>
-                        <td>
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => {
-                                setEditingItemIndex(idx);
-                                setShowItemForm(true);
-                              }}
-                              className="p-1.5 rounded hover:bg-gray-100 text-gray-500"
-                              title="Edit Item"
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </button>
-                            <button onClick={() => setItems(items.filter((_, i) => i !== idx))} className="p-1.5 rounded hover:bg-red-50 text-red-500" title="Delete Item">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+            <div className="border rounded-xl">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="crm-table rounded-xl overflow-hidden">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Sub-category / Description</th>
+                      <th>Measurement</th>
+                      <th>Area</th>
+                      <th>Cost/Sq.ft</th>
+                      <th>Total</th>
+                      <th className="w-10"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.length === 0 ? (
+                      <tr><td colSpan={7} className="text-center py-6 text-gray-400">No items added to this quotation yet.</td></tr>
+                    ) : (
+                      items.map((it, idx) => (
+                        <tr key={idx}>
+                          <td className="font-semibold">
+                            <div>{it.category}</div>
+                            <div className="text-xs text-gray-500 font-normal">{it.floor}</div>
+                          </td>
+                          <td>
+                            <div className="font-medium text-gray-900">{it.subCategory || '—'}</div>
+                            <div className="text-xs text-gray-500 mt-1 line-clamp-2" title={it.notes}>{it.notes}</div>
+                          </td>
+                          <td>{it.measurement}</td>
+                          <td>{it.area.toFixed(2)}</td>
+                          <td>{formatCurrency(it.costPerSqft)}</td>
+                          <td className="font-bold text-gray-900">{formatCurrency(it.totalAmount)}</td>
+                          <td>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => {
+                                  setEditingItemIndex(idx);
+                                  setShowItemForm(true);
+                                }}
+                                className="p-1.5 rounded hover:bg-gray-100 text-gray-500"
+                                title="Edit Item"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => setItems(items.filter((_, i) => i !== idx))} className="p-1.5 rounded hover:bg-red-50 text-red-500" title="Delete Item">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden divide-y rounded-xl overflow-hidden" style={{ borderColor: '#E2E8F0' }}>
+                {items.length === 0 ? (
+                  <div className="text-center py-6 text-gray-400 text-sm bg-white">No items added yet.</div>
+                ) : (
+                  items.map((it, idx) => (
+                    <div key={idx} className="p-4 space-y-3 bg-white">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{it.category}</h4>
+                          <span className="text-[12px] font-medium text-gray-500">{it.floor}</span>
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => { setEditingItemIndex(idx); setShowItemForm(true); }} className="p-1.5 rounded bg-gray-50 text-gray-600">
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => setItems(items.filter((_, i) => i !== idx))} className="p-1.5 rounded bg-red-50 text-red-500">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="text-sm">
+                        <div className="font-medium text-gray-800">{it.subCategory || '—'}</div>
+                        <div className="text-xs text-gray-500 mt-0.5">{it.notes}</div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs pt-2 border-t border-dashed">
+                        <div>
+                          <span className="text-gray-400 block mb-0.5">Measurement</span>
+                          <span className="font-medium text-gray-800">{it.measurement || '—'}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 block mb-0.5">Area</span>
+                          <span className="font-medium text-gray-800">{it.area.toFixed(2)} Sq.ft</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 block mb-0.5">Cost/Sq.ft</span>
+                          <span className="font-medium text-gray-800">{formatCurrency(it.costPerSqft)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 block mb-0.5">Total</span>
+                          <span className="font-bold text-gray-900">{formatCurrency(it.totalAmount)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
 
             {/* Add/Edit Item Form */}

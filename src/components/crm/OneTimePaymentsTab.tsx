@@ -55,8 +55,10 @@ export default function OneTimePaymentsTab({ projectId }: { projectId: string })
         </div>
       )}
 
-      <div className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
-        <div className="overflow-x-auto">
+      {/* Table & Mobile Cards */}
+      <div className="bg-white rounded-xl shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="crm-table">
             <thead>
               <tr><th>Expense Type</th><th>Date</th><th>Amount</th><th>Vendor</th><th>Mode</th><th>Remarks</th><th></th></tr>
@@ -83,6 +85,55 @@ export default function OneTimePaymentsTab({ projectId }: { projectId: string })
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden divide-y" style={{ borderColor: '#E2E8F0' }}>
+          {payments.length === 0 ? (
+            <div className="text-center py-8 text-gray-400 text-sm">No expenses recorded.</div>
+          ) : (
+            payments.map(p => (
+              <div key={p.id} className="p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-semibold" style={{ color: '#0F1C2E' }}>{p.expenseType}</h4>
+                    <span className="text-[12px] font-medium text-gray-500">{formatDate(p.date)}</span>
+                  </div>
+                  <button onClick={() => { if (confirm('Delete?')) deleteOneTimePayment(p.id); }} className="p-1.5 rounded bg-red-50 text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                  <div>
+                    <span className="text-xs text-gray-400 block mb-0.5">Amount</span>
+                    <span className="font-bold" style={{ color: '#C9A84C' }}>{formatCurrency(p.amount)}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-400 block mb-0.5">Mode</span>
+                    <span className="font-medium text-gray-900">{p.paymentMode}</span>
+                  </div>
+                </div>
+                
+                {(p.vendorName || p.remarks) && (
+                  <div className="pt-2 mt-2 border-t border-dashed border-gray-200 text-xs space-y-2">
+                    {p.vendorName && (
+                      <div>
+                        <span className="text-gray-400 block mb-0.5">Vendor Name</span>
+                        <span className="text-gray-700">{p.vendorName}</span>
+                      </div>
+                    )}
+                    {p.remarks && (
+                      <div>
+                        <span className="text-gray-400 block mb-0.5">Remarks</span>
+                        <span className="text-gray-700">{p.remarks}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
 

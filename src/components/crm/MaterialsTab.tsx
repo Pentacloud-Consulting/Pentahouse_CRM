@@ -55,9 +55,10 @@ export default function MaterialsTab({ projectId }: { projectId: string }) {
         </div>
       )}
 
-      {/* Table */}
-      <div className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
-        <div className="overflow-x-auto">
+      {/* Table & Mobile Cards */}
+      <div className="bg-white rounded-xl shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="crm-table">
             <thead>
               <tr>
@@ -98,6 +99,59 @@ export default function MaterialsTab({ projectId }: { projectId: string }) {
               )}
             </tbody>
           </table>
+        </div>
+        
+        {/* Mobile Cards */}
+        <div className="md:hidden divide-y" style={{ borderColor: '#E2E8F0' }}>
+          {materials.length === 0 ? (
+            <div className="text-center py-8 text-gray-400 text-sm">No materials added yet.</div>
+          ) : (
+            materials.map(m => (
+              <div key={m.id} className="p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-semibold" style={{ color: '#0F1C2E' }}>{m.materialName}</h4>
+                    <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">{m.materialCategory}</span>
+                  </div>
+                  <button onClick={() => { if (confirm('Delete?')) deleteMaterial(m.id); }} className="p-1.5 rounded bg-red-50 text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                  <div>
+                    <span className="text-xs text-gray-400 block mb-0.5">Quantity</span>
+                    <span className="font-medium text-gray-900">{m.quantity} {m.unit}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-400 block mb-0.5">Rate</span>
+                    <span className="font-medium text-gray-900">{formatCurrency(m.rate)}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-400 block mb-0.5">Total Amount</span>
+                    <span className="font-bold" style={{ color: '#C9A84C' }}>{formatCurrency(m.totalAmount)}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-400 block mb-0.5">Date</span>
+                    <span className="text-gray-800">{formatDate(m.purchaseDate)}</span>
+                  </div>
+                </div>
+                
+                {(m.vendorName || m.invoiceNumber) && (
+                  <div className="pt-2 mt-2 border-t border-dashed border-gray-200 grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                      <span className="text-gray-400 block mb-0.5">Vendor</span>
+                      <span className="text-gray-700">{m.vendorName || '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block mb-0.5">Invoice</span>
+                      <span className="text-gray-700">{m.invoiceNumber || '—'}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
 

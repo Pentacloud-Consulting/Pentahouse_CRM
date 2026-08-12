@@ -43,7 +43,7 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
   const filteredNav = navItems.filter(item => hasAccess(user.role, item.module));
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#F4F6F9' }}>
+    <div className="min-h-[100dvh] flex antialiased" style={{ background: '#F8FAFC', fontFamily: "'Outfit', sans-serif" }}>
       {/* ── Mobile Overlay ── */}
       {mobileOpen && (
         <div
@@ -69,7 +69,7 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3">
             <Building2 className="w-8 h-8 flex-shrink-0" style={{ color: '#C9A84C' }} />
             {!collapsed && (
-              <span className="text-lg font-bold text-white tracking-wider">PENTAHOUSE</span>
+              <span className="text-lg font-bold text-white tracking-widest uppercase">PENTAHOUSE</span>
             )}
           </div>
           {/* Close button for mobile */}
@@ -125,11 +125,11 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
         <div className="main-content-wrapper flex-1 flex flex-col transition-all duration-300">
           {/* Top bar */}
           <header
-            className="sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b"
+            className="sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 h-14 sm:h-16 border-b shadow-sm transition-all"
             style={{
-              background: 'rgba(255,255,255,0.9)',
+              background: 'rgba(255,255,255,0.95)',
               backdropFilter: 'blur(12px)',
-              borderColor: '#E2E8F0',
+              borderColor: 'rgba(0,0,0,0.05)',
             }}
           >
             <div className="flex items-center gap-3">
@@ -190,8 +190,10 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Page content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8">
-            {children}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+            <div className="max-w-7xl mx-auto w-full">
+              {children}
+            </div>
           </main>
         </div>
       </div>

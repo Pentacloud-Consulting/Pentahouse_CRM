@@ -38,26 +38,36 @@ export default function AccountDetailPage() {
 
   return (
     <div className="animate-fade-in max-w-4xl">
-      <div className="flex items-center gap-4 mb-6">
-        <button onClick={() => router.push('/crm/accounts')} className="p-2 rounded-lg hover:bg-gray-100">
-          <ArrowLeft className="w-5 h-5 text-gray-500" />
-        </button>
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold" style={{ color: '#0F1C2E', fontFamily: "'Playfair Display', serif" }}>
-            {account.clientName}
-          </h2>
-          <span className="text-xs text-gray-400">Created {formatDate(account.createdAt)}</span>
-        </div>
-        {!editing ? (
-          <button onClick={() => { setForm(account as unknown as Record<string, unknown>); setEditing(true); }} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 border" style={{ borderColor: '#E2E8F0' }}>
-            Edit
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
+        <div className="flex items-start gap-3 w-full sm:w-auto flex-1">
+          <button onClick={() => router.push('/crm/accounts')} className="p-2 -ml-2 rounded-lg hover:bg-gray-100 flex-shrink-0 mt-0.5 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-500" />
           </button>
-        ) : (
-          <div className="flex gap-3">
-            <button onClick={() => setEditing(false)} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
-            <button onClick={handleSave} className="btn-gold"><Save className="w-4 h-4" /> Save</button>
+          <div>
+            <h2 className="text-[24px] sm:text-[28px] font-bold tracking-tight text-[#0F1C2E]">
+              {account.clientName}
+            </h2>
+            <div className="flex flex-wrap items-center gap-2 mt-1.5">
+              <span className="text-[12px] text-gray-400 font-medium">Created {formatDate(account.createdAt)}</span>
+            </div>
           </div>
-        )}
+        </div>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {!editing ? (
+            <button onClick={() => { setForm(account as unknown as Record<string, unknown>); setEditing(true); }} className="flex-1 sm:flex-none px-4 py-2.5 rounded-lg text-[14px] font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors border shadow-sm flex items-center justify-center" style={{ borderColor: '#E2E8F0' }}>
+              Edit
+            </button>
+          ) : (
+            <>
+              <button onClick={() => setEditing(false)} className="flex-1 sm:flex-none px-4 py-2.5 rounded-lg text-[14px] font-semibold text-gray-600 hover:bg-gray-100 flex items-center justify-center">
+                Cancel
+              </button>
+              <button onClick={handleSave} className="flex-1 sm:flex-none bg-[#C9A84C] hover:bg-[#b5953e] text-white rounded-lg shadow-md hover:shadow-lg transition-all font-semibold flex items-center justify-center gap-2 px-4 py-2.5">
+                <Save className="w-4 h-4" /> Save
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Account Info */}
@@ -105,16 +115,26 @@ export default function AccountDetailPage() {
 
       {/* Lookup: Converted From Lead */}
       {lead && (
-        <div className="bg-white rounded-xl p-6 shadow-sm mb-6" style={{ border: '1px solid #E2E8F0' }}>
-          <h3 className="text-sm font-semibold mb-3 uppercase tracking-wider" style={{ color: '#C9A84C' }}>
+        <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm mb-6" style={{ border: '1px solid rgba(0,0,0,0.04)' }}>
+          <h3 className="text-[12px] font-bold mb-4 uppercase tracking-wider" style={{ color: '#C9A84C' }}>
             Converted From Lead
           </h3>
-          <div className="lookup-display">
-            <div className="lookup-row">
-              <div className="lookup-item"><span>Lead Name</span><span>{lead.leadName}</span></div>
-              <div className="lookup-item"><span>Mobile</span><span>{lead.mobile}</span></div>
-              <div className="lookup-item"><span>Lead Source</span><span>{lead.leadSource}</span></div>
-              <div className="lookup-item"><span>Budget</span><span>{formatCurrency(lead.budget)}</span></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6">
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Lead Name</span>
+              <span className="text-[14px] font-medium text-gray-900">{lead.leadName}</span>
+            </div>
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Mobile</span>
+              <span className="text-[14px] font-medium text-gray-900">{lead.mobile || '—'}</span>
+            </div>
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Lead Source</span>
+              <span className="text-[14px] font-medium text-gray-900">{lead.leadSource || '—'}</span>
+            </div>
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Budget</span>
+              <span className="text-[14px] font-medium text-gray-900">{formatCurrency(lead.budget)}</span>
             </div>
           </div>
         </div>

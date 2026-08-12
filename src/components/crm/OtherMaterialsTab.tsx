@@ -50,8 +50,10 @@ export default function OtherMaterialsTab({ projectId }: { projectId: string }) 
         </div>
       )}
 
-      <div className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
-        <div className="overflow-x-auto">
+      {/* Table & Mobile Cards */}
+      <div className="bg-white rounded-xl shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="crm-table">
             <thead>
               <tr>
@@ -84,8 +86,36 @@ export default function OtherMaterialsTab({ projectId }: { projectId: string }) 
                 ))
               )}
             </tbody>
-            {/* Footer removed to avoid duplicating the total from the summary card */}
           </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden divide-y" style={{ borderColor: '#E2E8F0' }}>
+          {materials.length === 0 ? (
+            <div className="text-center py-8 text-gray-400 text-sm">No other materials recorded yet.</div>
+          ) : (
+            materials.map(m => (
+              <div key={m.id} className="p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <Package className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold" style={{ color: '#0F1C2E' }}>{m.materialName}</h4>
+                      <span className="text-[12px] font-medium text-gray-500">{formatDate(m.date)}</span>
+                    </div>
+                  </div>
+                  <button onClick={() => { if (confirm('Delete?')) deleteOtherMaterial(m.id); }} className="p-1.5 rounded bg-red-50 text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="pt-2 border-t border-dashed border-gray-200">
+                  <span className="text-xs text-gray-400 block mb-1">Amount</span>
+                  <span className="font-bold" style={{ color: '#0F1C2E' }}>{formatCurrency(m.amount)}</span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

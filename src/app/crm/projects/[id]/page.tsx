@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useData } from '@/contexts/DataContext';
@@ -28,6 +28,35 @@ export default function ProjectDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<Record<string, unknown>>((project as unknown as Record<string, unknown>) || {});
+  
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showRightFade, setShowRightFade] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollContainerRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+        setShowRightFade(scrollLeft < scrollWidth - clientWidth - 10);
+      }
+    };
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      handleScroll();
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const activeElement = scrollContainerRef.current.children[activeTab] as HTMLElement;
+      if (activeElement) {
+        const container = scrollContainerRef.current;
+        const scrollLeft = activeElement.offsetLeft - (container.clientWidth / 2) + (activeElement.clientWidth / 2);
+        container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+      }
+    }
+  }, [activeTab]);
 
   if (!project) {
     return (
@@ -66,49 +95,88 @@ export default function ProjectDetailPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
-        <button onClick={() => router.push('/crm/projects')} className="p-2 rounded-lg hover:bg-gray-100 self-start">
-          <ArrowLeft className="w-5 h-5 text-gray-500" />
-        </button>
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <span className="text-xs sm:text-sm font-mono font-semibold px-2 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }}>
-              {project.projectId}
-            </span>
-            <h2 className="text-xl sm:text-2xl font-bold truncate" style={{ color: '#0F1C2E', fontFamily: "'Playfair Display', serif" }}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
+        <div className="flex items-start gap-3 w-full sm:w-auto flex-1 min-w-0">
+          <button onClick={() => router.push('/crm/projects')} className="p-2 -ml-2 rounded-lg hover:bg-gray-100 flex-shrink-0 mt-0.5 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-500" />
+          </button>
+          <div className="min-w-0 w-full">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded tracking-wide uppercase" style={{ background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }}>
+                {project.projectId}
+              </span>
+              <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${project.isActive !== false ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+                {project.isActive !== false ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+            <h2 className="text-[24px] sm:text-[28px] font-bold tracking-tight text-[#0F1C2E] truncate w-full" title={project.projectName}>
               {project.projectName}
             </h2>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
-            <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusColor(project.status)}`}>{project.status}</span>
-            <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${project.isActive !== false ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
-              {project.isActive !== false ? 'Active' : 'Inactive'}
-            </span>
-            <span className="text-xs text-gray-400">Created {formatDate(project.createdAt)}</span>
+            <div className="flex flex-wrap items-center gap-2 mt-1.5">
+              <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${getStatusColor(project.status)}`}>{project.status}</span>
+              <span className="text-[12px] text-gray-400 font-medium hidden sm:inline">Created {formatDate(project.createdAt)}</span>
+            </div>
           </div>
         </div>
-        {activeTab === 0 && !editing && (
-          <button onClick={() => { setForm(project as unknown as Record<string, unknown>); setEditing(true); }} className="self-start sm:self-center px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 border" style={{ borderColor: '#E2E8F0' }}>Edit</button>
-        )}
-        {activeTab === 0 && editing && (
-          <div className="flex gap-3 self-start sm:self-center">
-            <button onClick={() => setEditing(false)} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
-            <button onClick={handleSave} className="btn-gold"><Save className="w-4 h-4" /> Save</button>
-          </div>
-        )}
+        <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+          {activeTab === 0 && !editing && (
+            <button onClick={() => { setForm(project as unknown as Record<string, unknown>); setEditing(true); }} className="flex-1 sm:flex-none px-4 py-2.5 rounded-lg text-[14px] font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors border shadow-sm flex items-center justify-center" style={{ borderColor: '#E2E8F0' }}>
+              Edit
+            </button>
+          )}
+          {activeTab === 0 && editing && (
+            <>
+              <button onClick={() => setEditing(false)} className="flex-1 sm:flex-none px-4 py-2.5 rounded-lg text-[14px] font-semibold text-gray-600 hover:bg-gray-100 flex items-center justify-center">
+                Cancel
+              </button>
+              <button onClick={handleSave} className="flex-1 sm:flex-none bg-[#C9A84C] hover:bg-[#b5953e] text-white rounded-lg shadow-md hover:shadow-lg transition-all font-semibold flex items-center justify-center gap-2 px-4 py-2.5">
+                <Save className="w-4 h-4" /> Save
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="grid grid-cols-3 sm:flex sm:gap-0 border-b-0 sm:border-b mb-6 gap-2 sm:-mx-0 sm:px-0" style={{ borderColor: '#E2E8F0' }}>
-        {TABS.map((tab, i) => (
-          <button 
-            key={tab} 
-            className={`tab-btn flex items-center justify-center text-center ${activeTab === i ? 'active' : ''}`} 
-            onClick={() => setActiveTab(i)}
-          >
-            {tab}
-          </button>
-        ))}
+      {/* Mobile Tab Select */}
+      <div className="block sm:hidden mb-6">
+        <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Select Section</label>
+        <select 
+          className="crm-select bg-white w-full shadow-sm text-sm font-semibold text-gray-800"
+          value={activeTab}
+          onChange={(e) => setActiveTab(Number(e.target.value))}
+          style={{ borderColor: '#E2E8F0' }}
+        >
+          {TABS.map((tab, i) => (
+            <option key={tab} value={i}>{tab}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Desktop Tabs */}
+      <div className="hidden sm:block relative mb-6">
+        <div 
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto hide-scrollbar border-b gap-6 w-full" 
+          style={{ borderColor: '#E2E8F0', WebkitOverflowScrolling: 'touch' }}
+        >
+          {TABS.map((tab, i) => (
+            <button 
+              key={tab} 
+              className={`shrink-0 flex items-center justify-center whitespace-nowrap px-1 py-3 text-[14px] font-semibold transition-colors border-b-2
+                ${activeTab === i 
+                  ? 'text-[#C9A84C] border-[#C9A84C]' 
+                  : 'text-gray-600 border-transparent bg-transparent hover:text-gray-900 hover:border-gray-300'
+                }`} 
+              onClick={() => setActiveTab(i)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        {/* Subtle right gradient to indicate more scrollable area (only if tabs overflow on desktop/tablet) */}
+        {showRightFade && (
+          <div className="absolute top-0 right-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+        )}
       </div>
 
       {/* Tab Content */}
@@ -169,40 +237,70 @@ export default function ProjectDetailPage() {
 
           {/* Lookup Displays */}
           {account && (
-            <div className="bg-white rounded-xl p-6 shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
-              <h3 className="text-sm font-semibold mb-3 uppercase tracking-wider" style={{ color: '#C9A84C' }}>Account Details (Lookup)</h3>
-              <div className="lookup-display">
-                <div className="lookup-row">
-                  <div className="lookup-item"><span>Client Name</span><span>{account.clientName}</span></div>
-                  <div className="lookup-item"><span>Mobile</span><span>{account.mobile}</span></div>
-                  <div className="lookup-item"><span>Email</span><span>{account.email}</span></div>
-                  <div className="lookup-item"><span>City</span><span>{account.city}</span></div>
-                  <div className="lookup-item"><span>GST</span><span>{account.gstNumber || '—'}</span></div>
+            <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm" style={{ border: '1px solid rgba(0,0,0,0.04)' }}>
+              <h3 className="text-[12px] font-bold mb-4 uppercase tracking-wider" style={{ color: '#C9A84C' }}>Account Details (Lookup)</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6">
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Client Name</span>
+                  <span className="text-[14px] font-medium text-gray-900">{account.clientName}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Mobile</span>
+                  <span className="text-[14px] font-medium text-gray-900">{account.mobile || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Email</span>
+                  <span className="text-[14px] font-medium text-gray-900">{account.email || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">City</span>
+                  <span className="text-[14px] font-medium text-gray-900">{account.city || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">GST</span>
+                  <span className="text-[14px] font-medium text-gray-900">{account.gstNumber || '—'}</span>
                 </div>
               </div>
             </div>
           )}
           {contact && (
-            <div className="bg-white rounded-xl p-6 shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
-              <h3 className="text-sm font-semibold mb-3 uppercase tracking-wider" style={{ color: '#C9A84C' }}>Contact Details (Lookup)</h3>
-              <div className="lookup-display">
-                <div className="lookup-row">
-                  <div className="lookup-item"><span>Contact Name</span><span>{contact.contactName}</span></div>
-                  <div className="lookup-item"><span>Mobile</span><span>{contact.mobile}</span></div>
-                  <div className="lookup-item"><span>Email</span><span>{contact.email}</span></div>
+            <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm mt-5" style={{ border: '1px solid rgba(0,0,0,0.04)' }}>
+              <h3 className="text-[12px] font-bold mb-4 uppercase tracking-wider" style={{ color: '#C9A84C' }}>Contact Details (Lookup)</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6">
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Contact Name</span>
+                  <span className="text-[14px] font-medium text-gray-900">{contact.contactName}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Mobile</span>
+                  <span className="text-[14px] font-medium text-gray-900">{contact.mobile || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Email</span>
+                  <span className="text-[14px] font-medium text-gray-900">{contact.email || '—'}</span>
                 </div>
               </div>
             </div>
           )}
           {lead && (
-            <div className="bg-white rounded-xl p-6 shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
-              <h3 className="text-sm font-semibold mb-3 uppercase tracking-wider" style={{ color: '#C9A84C' }}>Converted From Lead (Lookup)</h3>
-              <div className="lookup-display">
-                <div className="lookup-row">
-                  <div className="lookup-item"><span>Lead Name</span><span>{lead.leadName}</span></div>
-                  <div className="lookup-item"><span>Budget</span><span>{formatCurrency(lead.budget)}</span></div>
-                  <div className="lookup-item"><span>Plot Area</span><span>{lead.plotArea ? `${lead.plotArea} sq.ft` : '—'}</span></div>
-                  <div className="lookup-item"><span>Requirement</span><span>{lead.requirementType || '—'}</span></div>
+            <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm mt-5" style={{ border: '1px solid rgba(0,0,0,0.04)' }}>
+              <h3 className="text-[12px] font-bold mb-4 uppercase tracking-wider" style={{ color: '#C9A84C' }}>Converted From Lead (Lookup)</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6">
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Lead Name</span>
+                  <span className="text-[14px] font-medium text-gray-900">{lead.leadName}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Budget</span>
+                  <span className="text-[14px] font-medium text-gray-900">{formatCurrency(lead.budget)}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Plot Area</span>
+                  <span className="text-[14px] font-medium text-gray-900">{lead.plotArea ? `${lead.plotArea} sq.ft` : '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">Requirement</span>
+                  <span className="text-[14px] font-medium text-gray-900">{lead.requirementType || '—'}</span>
                 </div>
               </div>
             </div>
