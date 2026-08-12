@@ -3,10 +3,9 @@
 import { useState, useMemo, useRef } from 'react';
 import { useData } from '@/contexts/DataContext';
 import { formatDate, formatCurrency } from '@/lib/utils';
-import { Plus, Trash2, X, FileText, Printer, Check, Pencil } from 'lucide-react';
+import { Plus, Trash2, X, FileText, Check, Pencil, Eye, Download } from 'lucide-react';
 import ModalPortal from '@/components/ui/ModalPortal';
 import { QuotationLineItem } from '@/lib/types';
-import { useReactToPrint } from 'react-to-print';
 import QuotationPrintLayout, { DEFAULT_DESCRIPTIONS } from './QuotationPrintLayout';
 
 const CATEGORIES = ['Kitchen', 'Bed Room 1', 'Bed Room 2', 'Bed Room 3', 'Dining Cabinet', 'TV Unit', 'Wood Paneling', 'Shoe Rack', 'POP', 'Storage', 'Wash Basin', 'Bathroom Vanity', 'Foyer', 'Dressing'];
@@ -29,9 +28,25 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
   const [showBuilder, setShowBuilder] = useState(false);
   const [editingQuotation, setEditingQuotation] = useState<any>(null);
   const [selectedQuoteForPrint, setSelectedQuoteForPrint] = useState<any>(null);
+  const [viewingQuotation, setViewingQuotation] = useState<any>(null);
 
   const printRef = useRef<HTMLDivElement>(null);
-  const handlePrint = useReactToPrint({ contentRef: printRef });
+  const handleDownload = async (qNumber: string) => {
+    if (!printRef.current) return;
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+      const opt = {
+        margin: 0.5,
+        filename: `Quotation_${qNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      await html2pdf().set(opt).from(printRef.current).save();
+    } catch (error) {
+      console.error('PDF generation error:', error);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -81,15 +96,21 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
                           <Pencil className="w-3.5 h-3.5" /> Edit
                         </button>
                         <button
+                          onClick={() => setViewingQuotation(q)}
+                          className="px-3 py-1.5 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-semibold flex items-center gap-1.5"
+                        >
+                          <Eye className="w-3.5 h-3.5" /> View
+                        </button>
+                        <button
                           onClick={() => {
                             setSelectedQuoteForPrint(q);
-                            setTimeout(() => handlePrint(), 100);
+                            setTimeout(() => handleDownload(q.quotationNumber), 100);
                           }}
                           className="px-3 py-1.5 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs font-semibold flex items-center gap-1.5"
                         >
-                          <Printer className="w-3.5 h-3.5" /> Print PDF
+                          <Download className="w-3.5 h-3.5" /> Download
                         </button>
-                        <button onClick={() => { if (confirm('Delete this quotation?')) deleteQuotation(q.id); }} className="p-1.5 rounded hover:bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => { if (confirm('Delete this quotation?')) deleteQuotation(q.id); }} className="p-1.5 rounded hover:bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -146,11 +167,11 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
                   <button
                     onClick={() => {
                       setSelectedQuoteForPrint(q);
-                      setTimeout(() => handlePrint(), 100);
+                      setTimeout(() => handleDownload(q.quotationNumber), 100);
                     }}
                     className="flex-1 py-2 rounded bg-gray-50 text-gray-700 border border-gray-200 text-xs font-semibold flex items-center justify-center gap-1.5"
                   >
-                    <Printer className="w-3.5 h-3.5" /> Print PDF
+                    <Download className="w-3.5 h-3.5" /> Download
                   </button>
                 </div>
               </div>
@@ -168,6 +189,45 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
           initialQuotation={editingQuotation}
           onClose={() => setShowBuilder(false)}
         />
+      )}
+
+      {/* View Quotation Modal */}
+      {viewingQuotation && (
+        <ModalPortal>
+          <div className="modal-overlay p-4 sm:p-6" onClick={() => setViewingQuotation(null)}>
+            <div className="modal-content w-full max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-gray-50" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 flex-shrink-0 z-10">
+                <h3 className="font-bold text-gray-900">View Quotation: {viewingQuotation.quotationNumber}</h3>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => {
+                      setSelectedQuoteForPrint(viewingQuotation);
+                      setTimeout(() => handleDownload(viewingQuotation.quotationNumber), 100);
+                    }}
+                    className="btn-gold px-3 py-1.5 text-xs font-semibold rounded flex items-center gap-1.5"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download
+                  </button>
+                  <button onClick={() => setViewingQuotation(null)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center">
+                <div className="bg-white shadow-sm border border-gray-200" style={{ transformOrigin: 'top center', transform: 'scale(0.95)' }}>
+                  <QuotationPrintLayout
+                    items={viewingQuotation.items}
+                    projectName={viewingQuotation.projectName}
+                    projectLocation={viewingQuotation.projectLocation}
+                    clientName={viewingQuotation.clientName}
+                    quotationNumber={viewingQuotation.quotationNumber}
+                    quotationDate={viewingQuotation.quotationDate}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </ModalPortal>
       )}
 
       {/* Hidden Print Layout */}
@@ -195,7 +255,23 @@ function QuotationBuilder({ projectId, project, account, initialQuotation, onClo
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
 
   const printRef = useRef<HTMLDivElement>(null);
-  const handlePrint = useReactToPrint({ contentRef: printRef });
+
+  const handleDownload = async (qNumber: string) => {
+    if (!printRef.current) return;
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+      const opt = {
+        margin: 0.5,
+        filename: `Quotation_${qNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      await html2pdf().set(opt).from(printRef.current).save();
+    } catch (error) {
+      console.error('PDF generation error:', error);
+    }
+  };
 
   const clientName = account?.clientName || project?.projectName || 'Client';
   const nextNumber = `QT-${String((data.quotations?.length || 0) + 1).padStart(4, '0')}`;
@@ -207,7 +283,7 @@ function QuotationBuilder({ projectId, project, account, initialQuotation, onClo
 
   const grandTotal = useMemo(() => items.reduce((s, i) => s + i.totalAmount, 0), [items]);
 
-  const handleSaveAndPrint = () => {
+  const handleSaveAndPrint = async () => {
     if (items.length === 0) {
       alert("Please add at least one item.");
       return;
@@ -231,8 +307,8 @@ function QuotationBuilder({ projectId, project, account, initialQuotation, onClo
       addQuotation(payload);
     }
 
-    // Print
-    handlePrint();
+    // Download PDF directly
+    await handleDownload(quoteMeta.quotationNumber);
 
     // Close builder
     onClose();
