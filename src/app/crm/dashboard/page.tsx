@@ -5,16 +5,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { hasAccess } from '@/lib/permissions';
 import { formatCurrency } from '@/lib/utils';
 import {
-  Users, Building2, FolderKanban, TrendingUp, TrendingDown,
-  DollarSign, Percent, AlertCircle, CheckCircle2, PauseCircle, Hammer,
-  Search, Bell, Sparkles, Calendar, Zap, ArrowUpRight, Filter,
-  PieChart as PieIcon, BarChart3, Layers, ShieldCheck
+  Users, FolderKanban, TrendingUp, Percent, AlertCircle, CheckCircle2, Hammer,
+  Search, Bell, Sparkles, Calendar, Zap, ArrowUpRight,
+  PieChart as PieIcon, BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import {
-  PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid
+  PieChart, Pie, Cell, Tooltip, ResponsiveContainer
 } from 'recharts';
 
 const CHART_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#6366F1'];
@@ -41,8 +39,6 @@ export default function DashboardPage() {
 
   // ── Financial aggregates ──
   let totalMaterialCost = 0;
-  let totalLabourCost = 0;
-  let totalOneTimeCost = 0;
   let totalReceived = 0;
   let totalOutstanding = 0;
   const categoryTotals: Record<string, number> = {};
@@ -50,8 +46,6 @@ export default function DashboardPage() {
   data.projects.forEach(project => {
     const summary = getProjectFinancialSummary(project.id);
     totalMaterialCost += summary.totalMaterialsCost;
-    totalLabourCost += summary.totalLabourCost;
-    totalOneTimeCost += summary.totalOneTimeExpenses;
     totalReceived += summary.totalAmountReceived;
     totalOutstanding += summary.outstandingAmount;
 
@@ -243,7 +237,7 @@ export default function DashboardPage() {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(val: any) => [`${val} Leads`, 'Count']}
+                      formatter={(val: number | string) => [`${val} Leads`, 'Count']}
                       contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }}
                     />
                   </PieChart>
@@ -389,7 +383,7 @@ export default function DashboardPage() {
             {/* Category Pill Summary */}
             <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 overflow-x-auto text-[11px]">
               <span className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">Top Categories:</span>
-              {(categoryChartData.length > 0 ? categoryChartData : [{ name: 'Wood Materials', value: totalMaterialCost || 20 }]).slice(0, 4).map((cat, i) => (
+              {(categoryChartData.length > 0 ? categoryChartData : [{ name: 'Wood Materials', value: totalMaterialCost || 20 }]).slice(0, 4).map((cat) => (
                 <span key={cat.name} className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium whitespace-nowrap">
                   {cat.name}: <strong className="text-slate-900">{formatCurrency(cat.value)}</strong>
                 </span>
