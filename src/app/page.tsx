@@ -33,6 +33,8 @@ export default function LandingPage() {
       <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${scrolled ? 'glass-nav py-3 md:py-4' : 'bg-gradient-to-b from-black/60 to-transparent py-4 md:py-6'}`}>
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo.png" alt="Pentahouse" className="h-8 sm:h-9 w-auto object-contain" />
             <span className="text-lg sm:text-xl md:text-2xl font-display font-medium text-white tracking-widest uppercase">
               Pentahouse
             </span>
@@ -256,10 +258,14 @@ function LoginDrawer({ onClose }: { onClose: () => void }) {
           {/* Subtle Top Gold Accent */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C5A565] to-transparent opacity-50"></div>
           
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-display font-medium text-white tracking-wide" style={{ fontFamily: "'Outfit', sans-serif" }}>Client Portal</h2>
-              <p className="text-sm text-gray-400 mt-1 font-light">Secure Enterprise Access</p>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/logo.png" alt="Pentahouse" className="h-9 w-auto object-contain" />
+              <div>
+                <h2 className="text-xl md:text-2xl font-display font-medium text-white tracking-wide" style={{ fontFamily: "'Outfit', sans-serif" }}>Client Portal</h2>
+                <p className="text-xs text-gray-400 font-light">Secure Enterprise Access</p>
+              </div>
             </div>
             <button onClick={onClose} className="p-2 text-gray-400 hover:text-white transition-colors bg-white/5 rounded-full hover:bg-white/10">
               <X className="w-5 h-5" />

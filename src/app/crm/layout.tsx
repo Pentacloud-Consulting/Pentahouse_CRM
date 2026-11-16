@@ -65,13 +65,18 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
         }}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-5 py-5 border-b" style={{ borderColor: 'rgba(201,168,76,0.15)' }}>
-          <div className="flex items-center gap-3">
-            <Building2 className="w-8 h-8 flex-shrink-0" style={{ color: '#C9A84C' }} />
+        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'rgba(201,168,76,0.15)' }}>
+          <Link href="/crm/dashboard" className="flex items-center gap-3 group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/logo.png"
+              alt="Pentahouse Logo"
+              className="h-8 w-auto max-w-[32px] object-contain flex-shrink-0 transition-transform group-hover:scale-105"
+            />
             {!collapsed && (
-              <span className="text-lg font-bold text-white tracking-widest uppercase">PENTAHOUSE</span>
+              <span className="text-lg font-bold text-white tracking-widest uppercase font-display">PENTAHOUSE</span>
             )}
-          </div>
+          </Link>
           {/* Close button for mobile */}
           <button
             onClick={() => setMobileOpen(false)}
