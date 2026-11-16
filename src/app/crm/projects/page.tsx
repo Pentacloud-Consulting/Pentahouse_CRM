@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useData } from '@/contexts/DataContext';
 import { Project, ProjectType, ProjectStatus } from '@/lib/types';
@@ -15,15 +15,14 @@ export default function ProjectsPage() {
   const { data, addProject, deleteProject } = useData();
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
-  const [filterIsActive, setFilterIsActive] = useState('All');
-  const [showCreate, setShowCreate] = useState(false);
-
-  useEffect(() => {
+  const [filterIsActive, setFilterIsActive] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('filter') === 'Active') setFilterIsActive('Active');
+      if (params.get('filter') === 'Active') return 'Active';
     }
-  }, []);
+    return 'All';
+  });
+  const [showCreate, setShowCreate] = useState(false);
 
   const filtered = data.projects.filter(p => {
     const s = search.toLowerCase();

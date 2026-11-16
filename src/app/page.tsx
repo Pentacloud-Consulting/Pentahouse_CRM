@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowRight, X, Eye, EyeOff, Menu, XIcon } from 'lucide-react';
+import { ArrowRight, X, Eye, EyeOff } from 'lucide-react';
 import ModalPortal from '@/components/ui/ModalPortal';
 
 export default function LandingPage() {
   const [showLogin, setShowLogin] = useState(false);
-  const [mobileMenu, setMobileMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
   const { isAuthenticated } = useAuth();
@@ -101,6 +100,7 @@ export default function LandingPage() {
         <div className="max-w-[1600px] mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <div className="order-2 lg:order-1 reveal-wrapper rounded-sm">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/images/about_arch.png" alt="Modern Architecture" className="w-full h-auto object-cover reveal-image" />
             </div>
             <div className="order-1 lg:order-2 animate-fade-up">
@@ -109,7 +109,7 @@ export default function LandingPage() {
                 Mastery in every <br/> single detail.
               </h2>
               <p className="text-lg text-gray-400 font-light leading-relaxed mb-10">
-                At Pentahouse, we believe that true luxury lies in the details that others overlook. From the foundational engineering to the final aesthetic touches, our approach is uncompromising. We create spaces that don't just exist, but resonate.
+                At Pentahouse, we believe that true luxury lies in the details that others overlook. From the foundational engineering to the final aesthetic touches, our approach is uncompromising. We create spaces that don&apos;t just exist, but resonate.
               </p>
               <a href="#services" className="btn-nav-link text-sm inline-flex items-center gap-2">
                 Explore Services <ArrowRight className="w-4 h-4" />
@@ -149,6 +149,7 @@ export default function LandingPage() {
               ))}
               
               <div className="reveal-wrapper mt-16 rounded-sm">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/services_abstract.png" alt="Abstract architectural details" className="w-full h-80 object-cover reveal-image grayscale opacity-80" />
               </div>
             </div>
@@ -186,7 +187,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-16 mb-24">
             <div>
               <h2 className="text-4xl md:text-5xl font-display font-medium text-white mb-8">
-                Let's discuss <br/> your next project.
+                Let&apos;s discuss <br/> your next project.
               </h2>
               <a href="mailto:contact@pentahouse.com" className="text-xl md:text-2xl text-[#C5A565] hover:text-white transition-colors font-light">
                 contact@pentahouse.com

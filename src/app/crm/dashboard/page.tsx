@@ -7,7 +7,7 @@ import { formatCurrency } from '@/lib/utils';
 import {
   Users, FolderKanban, TrendingUp, Percent, AlertCircle, CheckCircle2, Hammer,
   Search, Bell, Calendar, Zap, ArrowUpRight, BarChart3, PieChart as PieIcon,
-  Building2, CreditCard, DollarSign
+  CreditCard
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';

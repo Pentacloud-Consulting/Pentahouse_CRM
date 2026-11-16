@@ -64,7 +64,6 @@ export default function LeadDetailPage() {
   };
 
   const canConvert = lead.status === 'Qualified';
-  const isConverted = lead.status === 'Converted';
 
   return (
     <div className="animate-fade-in max-w-4xl">
