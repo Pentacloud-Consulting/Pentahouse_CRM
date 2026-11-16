@@ -114,8 +114,24 @@ export default function ProjectsPage() {
                   const acct = project.accountId ? data.accounts.find(a => a.id === project.accountId) : null;
                   return (
                     <tr key={project.id}>
-                      <td className="font-mono text-xs font-semibold" style={{ color: '#C9A84C' }}>{project.projectId}</td>
-                      <td className="font-medium" style={{ color: '#0F1C2E' }}>{project.projectName}</td>
+                      <td className="font-mono text-xs font-semibold">
+                        <Link
+                          href={`/crm/projects/${project.id}`}
+                          className="hover:underline transition-colors"
+                          style={{ color: '#C9A84C' }}
+                        >
+                          {project.projectId}
+                        </Link>
+                      </td>
+                      <td className="font-medium">
+                        <Link
+                          href={`/crm/projects/${project.id}`}
+                          className="font-semibold hover:underline transition-colors"
+                          style={{ color: '#C9A84C' }}
+                        >
+                          {project.projectName}
+                        </Link>
+                      </td>
                       <td>
                         {acct ? (
                           <Link href={`/crm/accounts/${acct.id}`} className="text-sm font-medium hover:underline" style={{ color: '#C9A84C' }}>
@@ -171,8 +187,22 @@ export default function ProjectsPage() {
               <div key={project.id} className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm transition-all" style={{ border: '1px solid rgba(0,0,0,0.04)' }}>
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <div className="font-semibold text-[#0F1C2E] text-[16px] leading-tight mb-1">{project.projectName}</div>
-                    <div className="font-mono text-xs font-semibold" style={{ color: '#C9A84C' }}>{project.projectId}</div>
+                    <Link
+                      href={`/crm/projects/${project.id}`}
+                      className="font-semibold hover:underline text-[16px] leading-tight mb-1 inline-block transition-colors"
+                      style={{ color: '#C9A84C' }}
+                    >
+                      {project.projectName}
+                    </Link>
+                    <div>
+                      <Link
+                        href={`/crm/projects/${project.id}`}
+                        className="font-mono text-xs font-semibold hover:underline"
+                        style={{ color: '#C9A84C' }}
+                      >
+                        {project.projectId}
+                      </Link>
+                    </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${getStatusColor(project.status)}`}>
