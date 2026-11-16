@@ -36,11 +36,11 @@ export default function InteriorMaterialsTab({ projectId }: { projectId: string 
     try {
       const html2pdf = (await import('html2pdf.js')).default;
       const opt = {
-        margin: 0.5,
+        margin: [6, 10, 6, 10],
         filename: `Quotation_${qNumber}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await html2pdf().set(opt as any).from(printRef.current).save();
@@ -345,11 +345,11 @@ function QuotationBuilder({ projectId, project, account, initialQuotation, onClo
     try {
       const html2pdf = (await import('html2pdf.js')).default;
       const opt = {
-        margin: 0.5,
+        margin: [6, 10, 6, 10],
         filename: `Quotation_${qNumber}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await html2pdf().set(opt as any).from(printRef.current).save();
